@@ -1,0 +1,15 @@
+# MacOS files
+.DS_Store
+
+# Python
+*.pyc
+__pycache__/
+db.sqlite3
+
+# Django
+/static/
+.env
+
+# Node.js (para más adelante el frontend)
+node_modules/
+dist/

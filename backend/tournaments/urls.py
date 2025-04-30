@@ -8,4 +8,6 @@ urlpatterns = [
     path('tournaments/<int:tournament_id>/register/', TournamentRegisterView.as_view(), name='tournament-register'),
     path('tournaments/<int:tournament_id>/participants/', TournamentParticipantsListView.as_view(), name='tournament-participants'),
     path('tournaments/<int:tournament_id>/matches/', TournamentMatchesListView.as_view(), name='tournament-matches'),
+    path('tournaments/<int:id>/full/', FullTournamentDetailView.as_view(), name='tournament_full_detail'),
+    path('tournaments/<int:tournament_id>/generate_matches/', GenerateMatchesView.as_view(), name='generate_matches'),
 ]

@@ -8,8 +8,19 @@ class Tournament(models.Model):
         ('finished', 'Finished'),
     ]
 
+    MODE_CHOICES = [
+        ('classic', 'Classic'),
+        ('rapid', 'Rapid'),
+        ('blitz', 'Blitz'),
+    ]
+
     name = models.CharField(max_length=255)
+    description = models.TextField(blank=True)
+    mode = models.CharField(max_length=20, choices=MODE_CHOICES, default='classic')
     start_date = models.DateField()
+    start_time = models.TimeField(null=True, blank=True)
+    max_players = models.IntegerField(default=16)
+    prize = models.CharField(max_length=100, blank=True)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
     created_at = models.DateTimeField(auto_now_add=True)
 

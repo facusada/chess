@@ -42,6 +42,15 @@ class TournamentRegisterView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
+        # Validar límite de participantes
+        current_count = TournamentParticipant.objects.filter(tournament=tournament).count()
+        if current_count >= tournament.max_players:
+            return Response(
+                {"detail": "Maximum number of participants reached."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Crear participante
         participant = TournamentParticipant.objects.create(
             tournament=tournament,
             user=request.user
@@ -94,10 +103,7 @@ class GenerateMatchesView(APIView):
     def post(self, request, tournament_id):
         tournament = get_object_or_404(Tournament, id=tournament_id)
 
-        if Match.objects.filter(tournament=tournament).exists():
-            return Response({"detail": "Matches have already been generated."}, status=status.HTTP_400_BAD_REQUEST)
-
-        # Obtener participantes
+        # Obtener participantes actuales
         participant_ids = list(
             TournamentParticipant.objects.filter(tournament=tournament)
             .values_list("user_id", flat=True)
@@ -109,8 +115,20 @@ class GenerateMatchesView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        # Mezclar y emparejar
-        # No retorna un valor sino que mezcla el array que se le pase
+        # Obtener jugadores ya involucrados en partidas
+        existing_match_players = set(x for tup in Match.objects.filter(tournament=tournament).values_list("player_one_id", "player_two_id") for x in tup)
+
+        # Si ya hay partidas y no hay nuevos jugadores, no hacer nada
+        if Match.objects.filter(tournament=tournament).exists():
+            if existing_match_players.issuperset(participant_ids):
+                return Response(
+                    {"detail": "Matches already generated and no new participants."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            # Si hay nuevos participantes, eliminar las partidas viejas
+            Match.objects.filter(tournament=tournament).delete()
+
+        # Generar nuevas partidas
         random.shuffle(participant_ids)
         matches_created = []
 
@@ -126,7 +144,7 @@ class GenerateMatchesView(APIView):
             )
             matches_created.append(match)
 
-        # Si número impar, dejar un jugador libre (bye)
+        # Jugador libre si son impares
         if len(participant_ids) % 2 != 0:
             bye_user_id = participant_ids[-1]
             matches_created.append({
@@ -134,6 +152,5 @@ class GenerateMatchesView(APIView):
                 "note": "Jugador sin oponente en esta ronda"
             })
 
-        # Serializar y devolver
         serializer = MatchSerializer(matches_created, many=True)
         return Response(serializer.data, status=status.HTTP_201_CREATED)

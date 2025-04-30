@@ -1,12 +1,55 @@
+import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { getTournamentDetail, registerToTournament, generateMatches } from "../services/tournamentService";
 
 export default function TournamentDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [data, setData] = useState(null);
 
-  const goBack = () => {
-    navigate(-1)
-  }
+  const goBack = () => navigate(-1);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await getTournamentDetail(id);
+        setData(res);
+      } catch (err) {
+        console.error("Error fetching tournament detail:", err);
+      }
+    };
+    fetchData();
+  }, [id]);
+
+  const handleJoinTournament = async () => {
+    try {
+      await registerToTournament(id);
+      alert("Te registraste correctamente");
+
+      const res = await getTournamentDetail(id);
+      setData(res);
+    } catch (err) {
+      alert(err.detail || "No se pudo registrar");
+    }
+  };
+
+  const handleGenerateMatches = async () => {
+    try {
+      await generateMatches(id);
+      alert("Las partidas se generaron con exito");
+
+      const res = await getTournamentDetail(id);
+      setData(res);
+    } catch (err) {
+      alert(err.detail || "No se pudieron generar partidas");
+    }
+  };
+
+  if (!data) return <div className="text-white text-center mt-10">Cargando...</div>;
+
+  const { tournament, participants, matches } = data;
+  const formattedDate = new Date(tournament.start_date).toLocaleDateString("es-AR");
+  const formattedTime = tournament.start_time ? tournament.start_time.slice(0, 5) : "00:00";
 
   return (
     <div className="min-h-screen bg-black text-[#F3DC9B] flex flex-col justify-between">
@@ -20,43 +63,79 @@ export default function TournamentDetail() {
           </div>
         </div>
       </div>
+
       {/* Middle */}
-      <div className="flex flex-col items-center justify-start flex-1 w-full px-8"></div>
-      <div className="min-h-screen bg-black text-[#F3DC9B] p-6">
-        <h2 className="text-center text-xl font-bold mb-4">COMIENZA EN 03:27</h2>
+      <div className="p-6 flex-1">
+        <h2 className="text-center text-xl font-bold mb-4">
+          COMIENZA EN {formattedDate} - {formattedTime} hs
+        </h2>
 
         <div className="grid grid-cols-2 gap-4">
+          {/* Participantes */}
           <div>
-            <h3 className="font-bold mb-2">PARTICIPANTES</h3>
+            <div className="flex items-center mb-2">
+              <h3 className="font-bold">PARTICIPANTES</h3>
+              <button
+                onClick={handleJoinTournament}
+                className="bg-[#F3DC9B] text-black font-bold rounded-full w-6 h-6 flex items-center justify-center m-4"
+                title="Unirse al torneo"
+              >
+                +
+              </button>
+            </div>
             <div className="grid grid-cols-3 text-left bg-[#1e1e1e] p-2 font-bold">
               <div>Nombre</div>
               <div>ELO??</div>
               <div>Puntos</div>
             </div>
-            {/* hardcoded sample */}
-            <div className="grid grid-cols-3 bg-[#2a2a2a] p-2">
-              <div>Jugador 1</div><div>13</div><div>1500</div>
-            </div>
+            {participants.map((p, index) => (
+              <div key={p.id} className={`grid grid-cols-3 p-2 ${index % 2 === 0 ? "bg-[#2a2a2a]" : "bg-[#1e1e1e]"}`}>
+                <div>{p.user}</div>
+                <div>{Math.floor(Math.random() * 100)}</div>
+                <div>{(Math.random() * 2000).toFixed(0)}</div>
+              </div>
+            ))}
           </div>
 
+          {/* Encuentros */}
           <div>
             <h3 className="font-bold mb-2">ENCUENTROS EN PROGRESO</h3>
-            <div className="bg-[#2a2a2a] p-2 flex items-center justify-between">
-              <div>Jugador 1</div>
-              <div className="mx-2">VS</div>
-              <div>Jugador 2</div>
-              <button className="ml-4">👁️</button>
-            </div>
+            {matches.length === 0 ? (
+              <div className="bg-[#2a2a2a] p-2">No hay partidas</div>
+            ) : (
+              matches.map((m) => (
+                <div key={m.id} className="bg-[#2a2a2a] p-2 flex items-center justify-between mb-1">
+                  <div>{m.player_one}</div>
+                  <div className="mx-2">VS</div>
+                  <div>{m.player_two}</div>
+                  <button className="ml-4">👁️</button>
+                </div>
+              ))
+            )}
           </div>
+          {/* Botón para generar partidas */}
         </div>
-        {/* Bottom */}
-        <div className="bg-[#E74C3C] text-[#F3DC9B] p-4 flex items-center gap-4">
-          <TrophyIcon />
-          <span className="text-3xl font-bold">TORNEOS</span>
+        <div className="flex justify-center mt-6">
+          <button
+            onClick={handleGenerateMatches}
+            className="bg-[#F3DC9B] text-[#E74C3C] px-8 py-2 font-bold"
+          >
+            GENERAR PARTIDAS
+          </button>
         </div>
+      </div>
+
+      {/* Bottom */}
+      <div className="bg-[#E74C3C] text-[#F3DC9B] p-4 flex items-center gap-4">
+        <TrophyIcon />
+        <span className="text-3xl font-bold">TORNEOS</span>
       </div>
     </div>
   );
+}
+
+function SquareIcon() {
+  return <div className="w-6 h-6 border-2 border-[#F3DC9B]" />;
 }
 
 function TrophyIcon() {
@@ -65,8 +144,4 @@ function TrophyIcon() {
       🏆
     </div>
   );
-}
-
-function SquareIcon() {
-  return <div className="w-6 h-6 border-2 border-[#F3DC9B]" />;
 }

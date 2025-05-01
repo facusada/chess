@@ -8,6 +8,7 @@ export const loginUser = async ({ username, password }) => {
       username,
       password,
     });
+
     return response.data;
   } catch (error) {
     if (error.response?.data) {

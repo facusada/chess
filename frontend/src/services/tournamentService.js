@@ -37,7 +37,7 @@ export const createTournament = async (data) => {
 export const getTournaments = async () => {
   try {
     const response = await axios.get(GET_TOURNAMENTS_URL);
-    
+
     return response.data;
   } catch (error) {
     console.error("Error creating tournament:", error);
@@ -90,6 +90,7 @@ export const generateMatches = async (tournamentId) => {
         },
       }
     );
+
     return response.data;
   } catch (error) {
     console.error("Error generating matches:", error);

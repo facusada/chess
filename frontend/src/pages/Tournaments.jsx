@@ -109,6 +109,7 @@ export default function Tournaments() {
                   <button
                     onClick={() => navigate(`/tournaments/${t.id}`)}
                     className="bg-[#E74C3C] text-white px-2 py-1 rounded text-sm"
+                    title="Detalle del torneo"
                   >
                     👁️
                   </button>

@@ -9,6 +9,23 @@ from django.shortcuts import get_object_or_404
 from .models import Tournament, TournamentParticipant, Match
 from .serializers import TournamentSerializer, TournamentParticipantSerializer, MatchSerializer
 
+# Modificar estado de una partida
+class UpdateMatchStatusView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def put(self, request, match_id):
+        match = get_object_or_404(Match, id=match_id)
+
+        new_status = request.data.get("status")
+        if new_status not in ['pending', 'finished', 'cancelled']:
+            return Response({"detail": "Invalid status."}, status=status.HTTP_400_BAD_REQUEST)
+
+        match.status = new_status
+        match.save()
+
+        serializer = MatchSerializer(match)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
 # Listar todos los torneos
 class TournamentListView(generics.ListAPIView):
     queryset = Tournament.objects.all()

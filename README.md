@@ -38,6 +38,7 @@ Plataforma web para gestionar torneos de ajedrez. Permite a los usuarios registr
 - Generación automática de partidas por pares
 - Estado de cada match (`pending`, `in_progress`, `finished`)
 - Control de jugadores "bye" (impares)
+- Modificacion de estados
 
 ### 📊 Visualización
 
@@ -60,6 +61,7 @@ Plataforma web para gestionar torneos de ajedrez. Permite a los usuarios registr
 | `POST` | `/api/tournaments/<id>/generate_matches/` | Generar partidas |
 | `GET` | `/api/tournaments/<id>/matches/` | Ver partidas |
 | `GET` | `/api/tournaments/<id>/full/` | Detalle completo del torneo |
+| `PUT` | `/api/tournaments/matches/<id>/update-status/` | Modificar estado de una partida |
 
 ---
 

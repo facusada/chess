@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+
 import { getTournamentDetail, registerToTournament, generateMatches } from "../services/tournamentService";
+
+import Swal from 'sweetalert2';
+
 
 export default function TournamentDetail() {
   const { id } = useParams();
@@ -24,24 +28,54 @@ export default function TournamentDetail() {
   const handleJoinTournament = async () => {
     try {
       await registerToTournament(id);
-      alert("Te registraste correctamente");
-
+  
+      await Swal.fire({
+        title: '¡Registrado!',
+        text: 'Te registraste correctamente al torneo.',
+        icon: 'success',
+        background: '#1E1E1E',
+        color: '#F3DC9B',
+        confirmButtonColor: '#E74C3C',
+      });
+  
       const res = await getTournamentDetail(id);
       setData(res);
     } catch (err) {
-      alert(err.detail || "No se pudo registrar");
+      Swal.fire({
+        title: 'Error',
+        text: err.detail || 'No se pudo registrar.',
+        icon: 'error',
+        background: '#1E1E1E',
+        color: '#F3DC9B',
+        confirmButtonColor: '#E74C3C',
+      });
     }
   };
 
   const handleGenerateMatches = async () => {
     try {
       await generateMatches(id);
-      alert("Las partidas se generaron con exito");
-
+  
+      await Swal.fire({
+        title: '¡Partidas generadas!',
+        text: 'Las partidas se generaron con éxito.',
+        icon: 'success',
+        background: '#1E1E1E',
+        color: '#F3DC9B',
+        confirmButtonColor: '#E74C3C',
+      });
+  
       const res = await getTournamentDetail(id);
       setData(res);
     } catch (err) {
-      alert(err.detail || "No se pudieron generar partidas");
+      Swal.fire({
+        title: 'Error',
+        text: err.detail || 'No se pudieron generar las partidas.',
+        icon: 'error',
+        background: '#1E1E1E',
+        color: '#F3DC9B',
+        confirmButtonColor: '#E74C3C',
+      });
     }
   };
 

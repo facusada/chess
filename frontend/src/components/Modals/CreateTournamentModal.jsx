@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { createTournament } from "../../services/tournamentService";
+import Swal from 'sweetalert2';
 
 export default function CreateTournamentModal({ onClose, onCreateSuccess }) {
   const [form, setForm] = useState({
@@ -19,10 +20,28 @@ export default function CreateTournamentModal({ onClose, onCreateSuccess }) {
   const handleSubmit = async () => {
     try {
       const response = await createTournament(form);
-      alert(`Torneo creado: ${response.name}`);
+  
+      Swal.fire({
+        title: '¡Torneo creado!',
+        text: `El torneo "${response.name}" fue creado exitosamente.`,
+        icon: 'success',
+        confirmButtonText: 'Aceptar',
+        background: '#1E1E1E',
+        color: '#F3DC9B',
+        confirmButtonColor: '#E74C3C',
+      });
+  
       onCreateSuccess(response);
     } catch (error) {
-      alert(error.detail || "No se pudo crear el torneo.");
+      Swal.fire({
+        title: 'Error',
+        text: error.detail || 'No se pudo crear el torneo.',
+        icon: 'error',
+        confirmButtonText: 'Cerrar',
+        background: '#1E1E1E',
+        color: '#F3DC9B',
+        confirmButtonColor: '#E74C3C',
+      });
     }
   };
 

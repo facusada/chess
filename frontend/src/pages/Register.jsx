@@ -1,8 +1,13 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+
+import { registerUser } from "../services/registerService";
+
 import Input from "../components/Register/Input";
 import PasswordInput from "../components/Register/PasswordInput";
-import { registerUser } from "../services/registerService";
+
+import Swal from 'sweetalert2';
+
 
 export default function Register() {
   const [showPassword, setShowPassword] = useState(false);
@@ -23,21 +28,55 @@ export default function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!acceptedTerms) return alert("Debes aceptar los términos.");
-    if (formData.password !== formData.repeatPassword)
-      return alert("Las contraseñas no coinciden.");
-
+  
+    if (!acceptedTerms) {
+      return Swal.fire({
+        title: 'Atención',
+        text: 'Debes aceptar los términos.',
+        icon: 'warning',
+        background: '#1E1E1E',
+        color: '#F3DC9B',
+        confirmButtonColor: '#E74C3C',
+      });
+    }
+  
+    if (formData.password !== formData.repeatPassword) {
+      return Swal.fire({
+        title: 'Error',
+        text: 'Las contraseñas no coinciden.',
+        icon: 'error',
+        background: '#1E1E1E',
+        color: '#F3DC9B',
+        confirmButtonColor: '#E74C3C',
+      });
+    }
+  
     try {
       const response = await registerUser({
         username: formData.username,
         email: formData.email,
         password: formData.password,
       });
-
-      alert(`Usuario creado: ${response.username}`);
+  
+      await Swal.fire({
+        title: '¡Usuario creado!',
+        text: `El usuario "${response.username}" fue registrado correctamente.`,
+        icon: 'success',
+        background: '#1E1E1E',
+        color: '#F3DC9B',
+        confirmButtonColor: '#E74C3C',
+      });
+  
       navigate("/login");
     } catch (error) {
-      alert(`Error: ${error.message}`);
+      Swal.fire({
+        title: 'Error',
+        text: error.message || 'No se pudo crear el usuario.',
+        icon: 'error',
+        background: '#1E1E1E',
+        color: '#F3DC9B',
+        confirmButtonColor: '#E74C3C',
+      });
     }
   };
 

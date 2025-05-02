@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Eye } from "lucide-react";
 import { loginUser } from "../services/loginService";
 import { useNavigate } from "react-router-dom";
+import Swal from 'sweetalert2';
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
@@ -18,10 +19,26 @@ export default function Login() {
       const { access, refresh } = await loginUser(credentials);
       localStorage.setItem("accessToken", access);
       localStorage.setItem("refreshToken", refresh);
+  
+      await Swal.fire({
+        title: '¡Login exitoso!',
+        text: 'Bienvenido al sistema de torneos.',
+        icon: 'success',
+        background: '#1E1E1E',
+        color: '#F3DC9B',
+        confirmButtonColor: '#E74C3C',
+      });
+  
       navigate("/tournaments");
-      alert("Login exitoso");
     } catch (error) {
-      alert(error.message);
+      Swal.fire({
+        title: 'Error',
+        text: error.message || 'No se pudo iniciar sesión.',
+        icon: 'error',
+        background: '#1E1E1E',
+        color: '#F3DC9B',
+        confirmButtonColor: '#E74C3C',
+      });
     }
   };
 

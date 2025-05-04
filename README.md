@@ -10,7 +10,7 @@ Plataforma web para gestionar torneos de ajedrez. Permite a los usuarios registr
 - **Backend**: Django + Django REST Framework
 - **Autenticación**: JWT (Simple JWT) + Djoser
 - **Base de datos**: SQLite / PostgreSQL
-- **Otros**: Axios, Postman, SweetAlert2
+- **Otros**: Axios, Postman.
 
 ---
 

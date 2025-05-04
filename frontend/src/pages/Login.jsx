@@ -7,19 +7,30 @@ import Swal from 'sweetalert2';
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [credentials, setCredentials] = useState({ username: "", password: "" });
+  const [errors, setErrors] = useState({ username: false, password: false });
   const navigate = useNavigate();
 
   const handleChange = (field, value) => {
     setCredentials((prev) => ({ ...prev, [field]: value }));
+    setErrors((prev) => ({ ...prev, [field]: false })); // limpiar error si se empieza a escribir
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const newErrors = {
+      username: credentials.username.trim() === "",
+      password: credentials.password.trim() === "",
+    };
+
+    setErrors(newErrors);
+
+    if (newErrors.username || newErrors.password) return;
+
     try {
       const { access, refresh } = await loginUser(credentials);
       localStorage.setItem("accessToken", access);
       localStorage.setItem("refreshToken", refresh);
-  
+
       await Swal.fire({
         title: '¡Login exitoso!',
         text: 'Bienvenido al sistema de torneos.',
@@ -28,7 +39,7 @@ export default function Login() {
         color: '#F3DC9B',
         confirmButtonColor: '#E74C3C',
       });
-  
+
       navigate("/tournaments");
     } catch (error) {
       Swal.fire({
@@ -42,6 +53,10 @@ export default function Login() {
     }
   };
 
+  const handleClose = () => {
+    navigate("/");
+  }
+
   return (
     <div className="min-h-screen bg-black flex items-center justify-center relative">
       <div className="bg-[#F3DC9B] p-8 rounded-md border-[4px] border-black w-full max-w-md text-black">
@@ -49,7 +64,12 @@ export default function Login() {
           <span className="font-bold flex items-center gap-2">
             <div className="w-4 h-4 bg-black rounded-sm" /> LOGO EMPRESA
           </span>
-          <button className="bg-red-600 text-white w-6 h-6 flex items-center justify-center font-bold text-sm rounded-sm">X</button>
+          <button 
+            className="bg-red-600 text-white w-6 h-6 flex items-center justify-center font-bold text-sm rounded-sm"
+            onClick={handleClose}
+          >
+            X
+          </button>
         </div>
 
         <form className="space-y-4" onSubmit={handleSubmit}>
@@ -57,8 +77,11 @@ export default function Login() {
             <label className="block mb-1 text-sm font-semibold">NOMBRE DE USUARIO</label>
             <input
               type="text"
-              className="w-full bg-black text-white px-3 py-2"
+              className={`w-full bg-black text-white px-3 py-2 border-2 ${
+                errors.username ? "border-red-500" : "border-transparent"
+              }`}
               onChange={(e) => handleChange("username", e.target.value)}
+              value={credentials.username}
             />
           </div>
 
@@ -67,8 +90,11 @@ export default function Login() {
             <div className="relative">
               <input
                 type={showPassword ? "text" : "password"}
-                className="w-full bg-black text-white px-3 py-2 pr-10"
+                className={`w-full bg-black text-white px-3 py-2 pr-10 border-2 ${
+                  errors.password ? "border-red-500" : "border-transparent"
+                }`}
                 onChange={(e) => handleChange("password", e.target.value)}
+                value={credentials.password}
               />
               <button
                 type="button"
@@ -87,20 +113,10 @@ export default function Login() {
             >
               SUBMIT
             </button>
-            <button
-              type="button"
-              className="bg-[#E74C3C] text-white px-4 py-2 font-bold text-sm"
-            >
-              TÉRMINOS Y CONDIC
-            </button>
           </div>
         </form>
 
         <div className="mt-6 text-sm">
-          <p>
-            YA TENÉS CUENTA?{" "}
-            <span className="text-[#E74C3C] font-bold cursor-pointer">INICIÁ SESIÓN</span>
-          </p>
           <p>
             OLVIDASTE TU CONTRASEÑA?{" "}
             <span className="text-[#E74C3C] font-bold cursor-pointer">RESETEALA</span>

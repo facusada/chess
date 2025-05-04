@@ -33,9 +33,9 @@ export default function LandingPage() {
           </div>
 
           <div className="mt-6 grid grid-cols-3 gap-2 text-xs font-bold">
-            <span className="border border-black p-1">TÉRMINOS Y CONDIC</span>
+            {/* <span className="border border-black p-1">TÉRMINOS Y CONDIC</span>
             <span className="border border-black p-1">MANUAL DE USUARIO</span>
-            <span className="border border-black p-1">F.A.Qs</span>
+            <span className="border border-black p-1">F.A.Qs</span> */}
           </div>
         </div>
       </div>

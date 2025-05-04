@@ -13,14 +13,39 @@ export default function CreateTournamentModal({ onClose, onCreateSuccess }) {
     prize: "",
   });
 
+  const [errors, setErrors] = useState({
+    name: false,
+    description: false,
+    mode: false,
+    startDate: false,
+    startTime: false,
+    players: false,
+    prize: false,
+  });
+
   const handleChange = (field, value) => {
     setForm((prev) => ({ ...prev, [field]: value }));
+    setErrors((prev) => ({ ...prev, [field]: false }));
   };
 
   const handleSubmit = async () => {
+    const newErrors = {
+      name: form.name.trim() === "",
+      description: form.description.trim() === "",
+      mode: form.mode === "",
+      startDate: form.startDate === "",
+      startTime: form.startTime === "",
+      players: form.players === "",
+      prize: form.prize.trim() === "",
+    };
+
+    setErrors(newErrors);
+
+    if (Object.values(newErrors).some(Boolean)) return;
+
     try {
       const response = await createTournament(form);
-  
+
       Swal.fire({
         title: '¡Torneo creado!',
         text: `El torneo "${response.name}" fue creado exitosamente.`,
@@ -30,7 +55,7 @@ export default function CreateTournamentModal({ onClose, onCreateSuccess }) {
         color: '#F3DC9B',
         confirmButtonColor: '#E74C3C',
       });
-  
+
       onCreateSuccess(response);
     } catch (error) {
       Swal.fire({
@@ -56,13 +81,13 @@ export default function CreateTournamentModal({ onClose, onCreateSuccess }) {
             <input
               type="text"
               placeholder="NOMBRE TORNEO"
-              className="w-full bg-[#1E1E1E] text-white px-4 py-2"
+              className={`w-full bg-[#1E1E1E] text-white px-4 py-2 border-2 rounded-sm ${errors.name ? "border-red-500" : "border-[#333]"}`}
               onChange={(e) => handleChange("name", e.target.value)}
             />
             <textarea
               placeholder="DESCRIPCIÓN"
               rows="5"
-              className="w-full bg-[#1E1E1E] text-white px-4 py-2 resize-none"
+              className={`w-full bg-[#1E1E1E] text-white px-4 py-2 resize-none border-2 rounded-sm "border-[#333]"`}
               onChange={(e) => handleChange("description", e.target.value)}
             />
           </div>
@@ -70,7 +95,7 @@ export default function CreateTournamentModal({ onClose, onCreateSuccess }) {
           {/* Columna derecha */}
           <div className="space-y-4">
             <select
-              className="w-full bg-[#1E1E1E] text-white px-4 py-2"
+              className={`w-full bg-[#1E1E1E] text-white px-4 py-2 border-2 rounded-sm ${errors.mode ? "border-red-500" : "border-[#333]"}`}
               onChange={(e) => handleChange("mode", e.target.value)}
             >
               <option value="">MODO</option>
@@ -85,7 +110,7 @@ export default function CreateTournamentModal({ onClose, onCreateSuccess }) {
               </label>
               <input
                 type="date"
-                className="w-1/2 bg-[#1E1E1E] text-white px-4 py-2 border border-black"
+                className={`w-1/2 bg-[#1E1E1E] text-white px-4 py-2 border-2 rounded-sm ${errors.startDate ? "border-red-500" : "border-[#333]"}`}
                 onChange={(e) => handleChange("startDate", e.target.value)}
               />
             </div>
@@ -96,7 +121,7 @@ export default function CreateTournamentModal({ onClose, onCreateSuccess }) {
               </label>
               <input
                 type="time"
-                className="w-1/2 bg-[#1E1E1E] text-white px-4 py-2 border border-black"
+                className={`w-1/2 bg-[#1E1E1E] text-white px-4 py-2 border-2 rounded-sm ${errors.startTime ? "border-red-500" : "border-[#333]"}`}
                 onChange={(e) => handleChange("startTime", e.target.value)}
               />
             </div>
@@ -107,7 +132,7 @@ export default function CreateTournamentModal({ onClose, onCreateSuccess }) {
               </label>
               <input
                 type="number"
-                className="w-1/2 bg-[#1E1E1E] text-white px-4 py-2 border border-black"
+                className={`w-1/2 bg-[#1E1E1E] text-white px-4 py-2 border-2 rounded-sm ${errors.players ? "border-red-500" : "border-[#333]"}`}
                 onChange={(e) => handleChange("players", e.target.value)}
               />
             </div>
@@ -119,7 +144,7 @@ export default function CreateTournamentModal({ onClose, onCreateSuccess }) {
               <input
                 type="text"
                 placeholder="5.000 PTS"
-                className="w-1/2 bg-[#1E1E1E] text-white px-4 py-2 border border-black"
+                className={`w-1/2 bg-[#1E1E1E] text-white px-4 py-2 border-2 rounded-sm ${errors.prize ? "border-red-500" : "border-[#333]"}`}
                 onChange={(e) => handleChange("prize", e.target.value)}
               />
             </div>

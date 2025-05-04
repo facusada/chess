@@ -8,7 +8,6 @@ import PasswordInput from "../components/Register/PasswordInput";
 
 import Swal from 'sweetalert2';
 
-
 export default function Register() {
   const [showPassword, setShowPassword] = useState(false);
   const [showRepeatPassword, setShowRepeatPassword] = useState(false);
@@ -20,15 +19,38 @@ export default function Register() {
     repeatPassword: "",
   });
 
+  const [errors, setErrors] = useState({
+    username: false,
+    email: false,
+    password: false,
+    repeatPassword: false,
+  });
+
   const navigate = useNavigate();
 
   const handleChange = (placeholder, value) => {
     setFormData((prev) => ({ ...prev, [placeholder]: value }));
+    setErrors((prev) => ({ ...prev, [placeholder]: false }));
   };
+
+  const handleClose = () => {
+    navigate('/')
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
+    const newErrors = {
+      username: formData.username.trim() === "",
+      email: formData.email.trim() === "",
+      password: formData.password.trim() === "",
+      repeatPassword: formData.repeatPassword.trim() === "",
+    };
+
+    setErrors(newErrors);
+
+    if (Object.values(newErrors).some(Boolean)) return;
+
     if (!acceptedTerms) {
       return Swal.fire({
         title: 'Atención',
@@ -39,7 +61,7 @@ export default function Register() {
         confirmButtonColor: '#E74C3C',
       });
     }
-  
+
     if (formData.password !== formData.repeatPassword) {
       return Swal.fire({
         title: 'Error',
@@ -50,14 +72,14 @@ export default function Register() {
         confirmButtonColor: '#E74C3C',
       });
     }
-  
+
     try {
       const response = await registerUser({
         username: formData.username,
         email: formData.email,
         password: formData.password,
       });
-  
+
       await Swal.fire({
         title: '¡Usuario creado!',
         text: `El usuario "${response.username}" fue registrado correctamente.`,
@@ -66,7 +88,7 @@ export default function Register() {
         color: '#F3DC9B',
         confirmButtonColor: '#E74C3C',
       });
-  
+
       navigate("/login");
     } catch (error) {
       Swal.fire({
@@ -88,18 +110,24 @@ export default function Register() {
           <span className="font-bold flex items-center gap-2">
             <div className="w-4 h-4 bg-black rounded-sm" /> LOGO EMPRESA
           </span>
-          <button className="bg-red-600 text-white w-6 h-6 flex items-center justify-center font-bold text-sm rounded-sm">X</button>
+          <button 
+            className="bg-red-600 text-white w-6 h-6 flex items-center justify-center font-bold text-sm rounded-sm"
+            onClick={handleClose}
+          >
+            X
+          </button>
         </div>
 
         <form className="space-y-4" onSubmit={handleSubmit}>
-          <Input label="username" placeholder="NOMBRE DE USUARIO" onChange={handleChange} />
-          <Input label="email" type="email" placeholder="EMAIL" onChange={handleChange} />
+          <Input label="username" placeholder="NOMBRE DE USUARIO" onChange={handleChange} error={errors.username} />
+          <Input label="email" type="email" placeholder="EMAIL" onChange={handleChange} error={errors.email} />
           <PasswordInput
             label="password"
             placeholder="CONTRASEÑA"
             visible={showPassword}
             toggle={() => setShowPassword(!showPassword)}
             onChange={handleChange}
+            error={errors.password}
           />
           <PasswordInput
             label="repeatPassword"
@@ -107,6 +135,7 @@ export default function Register() {
             visible={showRepeatPassword}
             toggle={() => setShowRepeatPassword(!showRepeatPassword)}
             onChange={handleChange}
+            error={errors.repeatPassword}
           />
 
           <div className="flex items-center justify-between text-sm font-bold">

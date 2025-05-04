@@ -8,9 +8,9 @@ Plataforma web para gestionar torneos de ajedrez. Permite a los usuarios registr
 
 - **Frontend**: React + Vite + TailwindCSS
 - **Backend**: Django + Django REST Framework
-- **Autenticación**: JWT (Simple JWT)
+- **Autenticación**: JWT (Simple JWT) + Djoser
 - **Base de datos**: SQLite / PostgreSQL
-- **Otros**: Axios, Postman.
+- **Otros**: Axios, Postman, SweetAlert2
 
 ---
 
@@ -21,6 +21,7 @@ Plataforma web para gestionar torneos de ajedrez. Permite a los usuarios registr
 - Registro de cuenta
 - Login con token JWT
 - Aceptación de términos y condiciones
+- **Reset de contraseña vía email**
 
 ### 🏆 Torneos
 
@@ -38,7 +39,7 @@ Plataforma web para gestionar torneos de ajedrez. Permite a los usuarios registr
 - Generación automática de partidas por pares
 - Estado de cada match (`pending`, `in_progress`, `finished`)
 - Control de jugadores "bye" (impares)
-- Modificacion de estados
+- Modificación de estados
 
 ### 📊 Visualización
 
@@ -48,12 +49,22 @@ Plataforma web para gestionar torneos de ajedrez. Permite a los usuarios registr
 
 ---
 
+## 🔐 Recuperación de contraseña
+
+- Envío automático de email con link de reseteo (usando Djoser)
+- Confirmación de nueva contraseña desde el frontend
+- Link generado por consola (modo desarrollo)
+
+---
+
 ## 🧪 Endpoints principales (API)
 
 | Método | Endpoint | Descripción |
 |--------|----------|-------------|
 | `POST` | `/api/register/` | Registro de usuario |
 | `POST` | `/api/token/` | Login (token JWT) |
+| `POST` | `/auth/users/reset_password/` | Solicitar email de reseteo de contraseña |
+| `POST` | `/auth/users/reset_password_confirm/` | Confirmar nueva contraseña |
 | `GET` | `/api/tournaments/` | Listar torneos |
 | `POST` | `/api/tournaments/create/` | Crear nuevo torneo |
 | `POST` | `/api/tournaments/<id>/register/` | Inscribirse a torneo |

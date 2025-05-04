@@ -5,11 +5,14 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Tournaments from "./pages/Tournaments";
 import TournamentDetail from "./pages/TournamentDetail";
+import ResetPasswordConfirm from "./pages/ResetPasswordConfirm";
 
 function App() {
   return (
     <Router>
       <Routes>
+        <Route path="/reset-password-confirm/:uid/:token" element={<ResetPasswordConfirm />} />
+
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
